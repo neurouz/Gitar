@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gitar.Web", "Gitar.Web\Gitar.Web.csproj", "{57D3BCEC-091E-4897-A08B-91F1DF36DBE7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{01CC63D8-794F-4480-9A46-EB174700EC4B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{1C5C4727-B466-41F5-87EE-5E2EAAE18C1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{6B13F31F-2BB8-4E3F-8391-BA9C0D006F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gitar.Domain", "Gitar.Domain\Gitar.Domain.csproj", "{988350AD-CD56-4162-9463-AAE047F4C5A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gitar.Application", "Gitar.Application\Gitar.Application.csproj", "{1EB183AD-6518-409D-BC36-77FBFAC58F5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Data.Json", "Infrastructure.Data.Json\Infrastructure.Data.Json.csproj", "{3F01872A-4B07-41AF-B291-3FCA2C05D99A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Services", "Infrastructure.Services\Infrastructure.Services.csproj", "{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57D3BCEC-091E-4897-A08B-91F1DF36DBE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D3BCEC-091E-4897-A08B-91F1DF36DBE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D3BCEC-091E-4897-A08B-91F1DF36DBE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D3BCEC-091E-4897-A08B-91F1DF36DBE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{988350AD-CD56-4162-9463-AAE047F4C5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{988350AD-CD56-4162-9463-AAE047F4C5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{988350AD-CD56-4162-9463-AAE047F4C5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{988350AD-CD56-4162-9463-AAE047F4C5A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB183AD-6518-409D-BC36-77FBFAC58F5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB183AD-6518-409D-BC36-77FBFAC58F5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB183AD-6518-409D-BC36-77FBFAC58F5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB183AD-6518-409D-BC36-77FBFAC58F5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F01872A-4B07-41AF-B291-3FCA2C05D99A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F01872A-4B07-41AF-B291-3FCA2C05D99A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F01872A-4B07-41AF-B291-3FCA2C05D99A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F01872A-4B07-41AF-B291-3FCA2C05D99A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{57D3BCEC-091E-4897-A08B-91F1DF36DBE7} = {6B13F31F-2BB8-4E3F-8391-BA9C0D006F3B}
+		{988350AD-CD56-4162-9463-AAE047F4C5A6} = {01CC63D8-794F-4480-9A46-EB174700EC4B}
+		{1EB183AD-6518-409D-BC36-77FBFAC58F5C} = {01CC63D8-794F-4480-9A46-EB174700EC4B}
+		{3F01872A-4B07-41AF-B291-3FCA2C05D99A} = {1C5C4727-B466-41F5-87EE-5E2EAAE18C1F}
+		{9FF1A9B9-5D66-43B2-8CD2-B91D532BB925} = {1C5C4727-B466-41F5-87EE-5E2EAAE18C1F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C252802-EF1E-40D5-BCF1-9D894EBBA695}
+	EndGlobalSection
+EndGlobal
