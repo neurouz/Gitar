@@ -7,11 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.Configure<ApiServiceConfiguration>(builder.Configuration.GetSection("GithubApi"));
-builder.Services.Configure<DataSourceConfiguration>(builder.Configuration.GetSection("DataSource"));
+builder.Services.Configure<ApiServiceConfiguration>(builder.Configuration.GetSection(ApiServiceConfiguration.CONFIGNAME));
+builder.Services.Configure<DataSourceConfiguration>(builder.Configuration.GetSection(DataSourceConfiguration.CONFIGNAME));
 
-builder.Services.AddScoped<IRepository<GitUser, int>, GitUserJsonRepository>();
+builder.Services.AddSingleton<IRepository<GitUser, Guid>, GitUserJsonRepository>();
 
 var app = builder.Build();
 

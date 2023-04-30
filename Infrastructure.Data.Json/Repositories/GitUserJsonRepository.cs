@@ -4,16 +4,20 @@ using Gitar.Domain.Exceptions;
 using Gitar.Domain.Models;
 using Gitar.Domain.Constants;
 using Microsoft.Extensions.Options;
-using System.Linq.Expressions;
-using System.IO;
-using System.Text;
+using Newtonsoft.Json;
+using Gitar.Domain.Common;
+using AutoMapper;
 
 namespace Infrastructure.Data.Json.Repositories;
 
-public class GitUserJsonRepository : IRepository<GitUser, int>
+public class GitUserJsonRepository : IRepository<GitUser, Guid>
 {
-    private string? FullJsonFileName { get; set; }
-    public GitUserJsonRepository(IOptions<DataSourceConfiguration> dataSourceOptions)
+    private readonly IMapper _mapper;
+    private string FullJsonFileName { get; set; }
+    private bool UseMinifiedJson { get; set; }
+    private List<GitUser> QueuedUsersForInsert { get; set; }
+
+    public GitUserJsonRepository(IMapper mapper, IOptions<DataSourceConfiguration> dataSourceOptions)
     {
         var config = dataSourceOptions?.Value;
 
@@ -25,46 +29,160 @@ public class GitUserJsonRepository : IRepository<GitUser, int>
             config.AbsolutePath;
 
         this.FullJsonFileName = Path.Combine(basePath, $"{config.FileName}{DataSourceFileExtensions.JSON}");
-    }
+        this.UseMinifiedJson = config.MinifyJson;
+        this.QueuedUsersForInsert = new List<GitUser>();
+        this._mapper = mapper;
 
-    public Task<GitUser> CreateAsync(GitUser entity)
-    {
-        Console.WriteLine($"Creating entity.. path={this.FullJsonFileName}");
-
-        if (File.Exists(this.FullJsonFileName))
+        if (config.ClearOnStartup && File.Exists(this.FullJsonFileName))
         {
             File.Delete(this.FullJsonFileName);
         }
 
-        using (FileStream fs = File.Create(this.FullJsonFileName))
+        if (!File.Exists(this.FullJsonFileName))
         {
-            AddText(fs, "This is some text");
-            AddText(fs, "This is some more text,");
-            AddText(fs, "\r\nand this is on a new line");
-            AddText(fs, "\r\n\r\nThe following is a subset of characters:\r\n");
+            using var stream = File.Create(this.FullJsonFileName);
+        }
+    }
+
+    public async Task<Response<GitUser>> CreateAsync(GitUser entity)
+    {
+        if (entity is null)
+            throw new ArgumentNullException(nameof(entity));
+
+        this.QueuedUsersForInsert.Add(entity);
+
+        try
+        {
+            var contentSource = await this.GetDataContent();
+
+            if (contentSource?.FirstOrDefault(e => e.Name == entity.Name) is not null)
+            {
+                this.QueuedUsersForInsert.Remove(entity);
+                throw new EntityAlreadyExistsException();
+            }
+
+            foreach (var queuedUser in this.QueuedUsersForInsert)
+            {
+                contentSource?.Add(queuedUser);
+            }
+
+            await this.UpdateDataContent(contentSource);
+
+            // Data inserted successfully, clear the queue
+            if (this.QueuedUsersForInsert is not null && this.QueuedUsersForInsert.Any())
+            {
+                this.QueuedUsersForInsert.Clear();
+            }
+        }
+        catch (IOException)
+        {
+            return Response<GitUser>.CreateWarning("Insert failed but user added in queue");
+        }
+        catch (Exception ex)
+        {
+            return Response<GitUser>.CreateError(ex.Message);
         }
 
-        return null;
+        return Response<GitUser>.CreateSuccess();
     }
 
-    private static void AddText(FileStream fs, string value)
+    public async Task DeleteAsync(Guid key)
     {
-        byte[] info = new UTF8Encoding(true).GetBytes(value);
-        fs.Write(info, 0, info.Length);
+        if (key == Guid.Empty)
+            throw new ArgumentException("Invalid key for deletion");
+
+        var content = await this.GetDataContent();
+
+        if (content is not null)
+        {
+            var entity = content.SingleOrDefault(x => x.Id == key);
+            if (entity is not null)
+            {
+                entity.IsActive = false;
+
+                await this.UpdateDataContent(content);
+            }
+        }
     }
 
-    public Task<GitUser> DeleteAsync(int key)
+    public async Task<GitUser?> GetByKeyAsync(Guid key)
     {
-        throw new NotImplementedException();
+        var users = await this.GetAsync(x => x.Id == key);
+
+        return users.SingleOrDefault();
     }
 
-    public Task<GitUser> GetAsync(Expression<Func<GitUser, bool>> predicate)
+    public async Task<IList<GitUser>> GetAsync(Func<GitUser, bool> predicate)
     {
-        throw new NotImplementedException();
+        var content = await this.GetDataContent();
+
+        if (content is not null)
+        {
+            var entities = content.Where(predicate);
+            if (entities is not null)
+            {
+                return entities.Where(x => x.IsActive).ToList();
+            }
+        }
+
+        return Enumerable.Empty<GitUser>().ToList();
     }
 
-    public Task<GitUser> UpdateAsync(GitUser entity)
+    public async Task UpdateAsync(GitUser entity)
     {
-        throw new NotImplementedException();
+        if (entity is null)
+            throw new ArgumentNullException(nameof(entity));
+
+        if (entity.Id == Guid.Empty)
+            throw new ArgumentException("Entity identificator is not valid");
+
+        var content = await this.GetDataContent();
+
+        if (content is not null)
+        {
+            var user = content.SingleOrDefault(x => x.Id == entity.Id);
+
+            if (user is not null)
+            {
+                //user.Name = entity.Name;
+
+                var result = _mapper.Map(entity, user);
+
+                await this.UpdateDataContent(content);
+            }
+        }
     }
+
+    #region Private helper methods
+
+    private async Task<List<GitUser>?> GetDataContent(bool initializeIfNull = true)
+    {
+        string existingContent = string.Empty;
+
+        using (var reader = new StreamReader(this.FullJsonFileName))
+        {
+            existingContent = await reader.ReadToEndAsync();
+        }
+
+        var contentSource = JsonConvert.DeserializeObject<List<GitUser>>(existingContent);
+
+        if (contentSource is null && initializeIfNull)
+            contentSource = new List<GitUser>();
+
+        return contentSource;
+    }
+    private async Task UpdateDataContent(List<GitUser>? dataContent)
+    {
+        if (dataContent is not null)
+        {
+            var contentToRewrite = JsonConvert.SerializeObject(dataContent, this.UseMinifiedJson ? Formatting.None : Formatting.Indented);
+
+            using (var writer = new StreamWriter(this.FullJsonFileName, append: false))
+            {
+                await writer.WriteAsync(contentToRewrite);
+            }
+        }
+    }
+
+    #endregion
 }

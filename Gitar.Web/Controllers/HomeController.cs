@@ -9,9 +9,9 @@ namespace Gitar.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IRepository<GitUser, int> _gitUserRepository;
+        private readonly IRepository<GitUser, Guid> _gitUserRepository;
 
-        public HomeController(ILogger<HomeController> logger, IRepository<GitUser, int> gitUserRepository)
+        public HomeController(ILogger<HomeController> logger, IRepository<GitUser, Guid> gitUserRepository)
         {
             _logger = logger;
             _gitUserRepository = gitUserRepository;
@@ -19,7 +19,48 @@ namespace Gitar.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var result = await _gitUserRepository.CreateAsync(null);
+            var obj1 = new GitUser()
+            {
+                Name = "prvi"
+            };
+
+            var obj2 = new GitUser()
+            {
+                Name = "drugi"
+            };
+
+            var obj3 = new GitUser()
+            {
+                Name = "treci"
+            };
+
+            var obj4 = new GitUser()
+            {
+                Name = "cetvrti"
+            };
+
+            var obj5 = new GitUser()
+            {
+                Name = "peti"
+            };
+
+            var result1 = await _gitUserRepository.CreateAsync(obj1);
+            var result2 = await _gitUserRepository.CreateAsync(obj2);
+            var result3 = await _gitUserRepository.CreateAsync(obj3);
+            var result4 = await _gitUserRepository.CreateAsync(obj4);
+            var result5 = await _gitUserRepository.CreateAsync(obj5);
+
+            await _gitUserRepository.DeleteAsync(obj2.Id);
+
+            var user = await _gitUserRepository.GetAsync(x => x.IsActive == false);
+
+            var oneUser = await _gitUserRepository.GetByKeyAsync(obj1.Id);
+
+            oneUser.ModifyDate = DateTime.Now;
+            oneUser.Name = "novi prvi";
+
+            await _gitUserRepository.UpdateAsync(oneUser);
+
             return View();
         }
 

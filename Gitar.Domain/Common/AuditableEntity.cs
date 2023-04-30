@@ -4,6 +4,6 @@ namespace Gitar.Domain.Common;
 
 public class AuditableEntity : IEntityBase
 {
-    public DateTime CreateDate { get; set; }
-    public DateTime ModifyDate { get; set; }
+    public DateTime CreateDate { get; set; } = DateTime.Now;
+    public DateTime ModifyDate { get; set; } = DateTime.Now;
 }

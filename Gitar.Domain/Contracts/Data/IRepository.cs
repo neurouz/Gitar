@@ -1,11 +1,14 @@
-﻿using System.Linq.Expressions;
+﻿using Gitar.Domain.Common;
+using Gitar.Domain.Models;
+using System.Linq.Expressions;
 
 namespace Gitar.Domain.Contracts.Data;
 
 public interface IRepository<TEntity, TKey> where TEntity : IEntityBase
 {
-    Task<TEntity> CreateAsync(TEntity entity);
-    Task<TEntity> UpdateAsync(TEntity entity);
-    Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
-    Task<TEntity> DeleteAsync(TKey key);
+    Task<Response<TEntity>> CreateAsync(TEntity entity);
+    Task UpdateAsync(TEntity entity);
+    Task<IList<TEntity>> GetAsync(Func<TEntity, bool> predicate);
+    Task<TEntity?> GetByKeyAsync(TKey key);
+    Task DeleteAsync(TKey key);
 }
