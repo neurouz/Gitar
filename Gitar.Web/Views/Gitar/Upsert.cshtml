@@ -5,13 +5,13 @@
         <div class="col d-flex flex-row align-items-center justify-content-between">
             <input type="text" class="form-control w-75" placeholder="Github username" asp-for="Name" value="@Model.Name" id="github-username" />
             <button type="button" class="btn btn-sm btn-outline-primary" id="username-validate" onclick="CheckUsername()"> 
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="username-validate-loader"></span>
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="username-validate-loader"></span>
                 <i class="fa" id="validate-icon"></i> &nbsp; Validate
             </button>
         </div>       
     </div>
     <hr />
-    <button type="submit" class="btn btn-success w-100"> <i class="fa-solid fa-user-plus"></i> &nbsp; Add user </button>
+    <button type="button" class="btn btn-success w-100" onclick="SubmitUserForm()"> <i class="fa-solid fa-user-plus"></i> &nbsp; Add user </button>
 </form>
 
 <script>
@@ -26,25 +26,46 @@
         var $validateIcon = $('#validate-icon');
         var $usernameLoader = $("#username-validate-loader");
 
-        $usernameLoader.show();
+        $usernameLoader.removeClass('d-none');
+        $validateIcon.removeClass();
 
         if ($usernameInput) {
             $.get('/Gitar/CheckUsername', { username: $usernameInput }, function(response) {
+                $validateIcon.addClass('fa-solid fa-check-double');
+                $usernameLoader.addClass('d-none');
                 toastr.info('Username is valid')
-                $validateIcon.addClass('fa-solid fa-check-double')
-                $usernameLoader.hide();
             })
             .fail(function(err) {
-                toastr.error(err.responseText ?? "Unexpected error occurred", "Error");
                 $validateIcon.addClass('fa-solid fa-triangle-exclamation');
-                $usernameLoader.hide();
+                $usernameLoader.addClass('d-none');
+                toastr.error(err.responseText ?? "Unexpected error occurred", "Error");
             });
         }
         else {
+            $usernameLoader.addClass('d-none');
             toastr.warning("Please provide a username", "Warning");
-            $validateIcon.removeClass();
         }
-
-        $usernameLoader.hide();
     }
+
+    function SubmitUserForm() {
+        var $usernameInput = $('#github-username').val();
+        var $usernameLoader = $("#username-validate-loader");
+
+        if ($usernameInput) {
+            $.post('/Gitar/CreateUser', { username: $usernameInput }, function(response) {
+                toastr.success('User created successfully');
+
+                $.get('Gitar/GetUsersPartial', function (responseHtml) {
+                    $('#content-wrapper').html(responseHtml);
+
+                    var $modalHolder = $('#modal-holder');
+                    $modalHolder.modal('hide');
+                });
+            })
+            .fail(function(err) {
+                toastr.error(err.responseText ?? "Unexpected error occurred", "Error");
+            });
+        }
+    }
+
 </script>

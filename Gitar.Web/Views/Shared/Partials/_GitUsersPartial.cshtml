@@ -1,0 +1,90 @@
+﻿@model List<Gitar.Domain.Models.GitUser>
+
+<button class="btn btn-success w-100" id="new-github-user"> <i class="fa-solid fa-user-plus"></i> &nbsp; Add new GitHub user </button>
+<br />
+<br />
+
+<div class="d-flex flex-row flex-wrap align-items-center justify-content-center gap-lg-5">
+    @foreach (var user in Model)
+    {
+        <div class="card shadow-lg" style="width: 400px">
+            @{
+                var imageUrl = string.IsNullOrEmpty(user.ImageUrl) ? "/assets/gitcat.png" : user.ImageUrl;
+            }
+            <img class="card-img-top" src="@imageUrl" alt="Github user">
+            <div class="card-body">
+                <h5 class="card-title"> @user.Name </h5>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted"> Last modified @user.ModifyDate.ToString("dd.MM.yyyy") at @user.ModifyDate.ToString("HH:mm")</small> <br />
+                <small class="text-muted"> Created @user.CreateDate.ToString("dd.MM.yyyy") at @user.CreateDate.ToString("HH:mm")</small>
+                <hr />
+                <div class="d-flex flex-row justify-content-start gap-1" style="margin-bottom: 10px">
+                    <button class="btn btn-sm btn-outline-danger user-deactivate-btn" data-id="@user.Id">
+                        <i class="fa-solid fa-ban"></i> &nbsp; Deactivate
+                    </button>
+                    <button class="btn btn-sm btn-success user-repositories-btn" style="margin-left: auto !important" data-username="@user.Name">
+                        <i class="fa-solid fa-code"></i> &nbsp; Repositories
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script>
+    $('.user-deactivate-btn').click(function () {
+        var userId = $(this).attr('data-id');
+
+        Swal.fire({
+            title: 'Warning',
+            text: 'This action will deactivate selected user. Are you sure?',
+            showCancelButton: true,
+            icon: 'warning',
+            confirmButtonText: 'Yes, deactivate user!',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('Gitar/DeactivateUser', { userId: userId }, function (response) {
+                    toastr.success('User deactivated');
+
+                    $.get('Gitar/GetUsersPartial', function(responseHtml) {
+                        $('#content-wrapper').html(responseHtml);
+                    });
+                })
+                .fail(function (err) {
+                    toastr.error(err.responseText ?? "Unexpected error occurred", "Error");
+                });
+            }
+        });
+    });
+
+    $('.user-repositories-btn').click(function() {
+        var username = $(this).attr('data-username');
+
+        $.get('/Gitar/GetRepositoriesForUser', { username: username }, function(response) {
+            var $modalHolder = $('#modal-holder');
+            var $modalBody = $modalHolder.find('.modal-body');
+            var $modalTitle = $modalHolder.find('#modal-title');
+
+            $modalTitle.html("Repositories for user " + username);
+            $modalBody.html(response);
+            $modalHolder.modal('show');
+        });
+    });
+
+    $('#new-github-user').click(function () {
+        $.get('/Gitar/GetUpsertForm', function (content, responseText, response) {
+            if (response.status === 200) {
+                var $modalHolder = $('#modal-holder');
+                var $modalBody = $modalHolder.find('.modal-body');
+                var $modalTitle = $modalHolder.find('#modal-title');
+
+                $modalTitle.html("Edit or create new github user");
+                $modalBody.html(content);
+                $modalHolder.modal('show');
+            }
+        })
+    });
+</script>

@@ -1,0 +1,14 @@
+﻿@model Gitar.Web.ViewModels.GitRepositoriesViewModel
+
+<div id="repositories-wrapper">
+    <h3> Repositories for user @Model.Username </h3>
+
+    <ul>
+        @foreach(var repository in Model.GitRepositories)
+        {
+            <li> @repository.RepositoryId </li>
+            <li> @repository.Description </li>
+            <li> <a href="@repository.Url" target="_blank"> @repository.Url </a> </li>
+        }
+    </ul>
+</div>
