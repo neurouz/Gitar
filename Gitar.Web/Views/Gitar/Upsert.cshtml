@@ -3,8 +3,11 @@
 <form method="post">
     <div class="row">
         <div class="col d-flex flex-row align-items-center justify-content-between">
-            <input type="text" class="form-control w-75" placeholder="Github username" asp-for="Name" value="@Model.Name" id="github-username">        
-            <button type="button" class="btn btn-sm btn-outline-primary" id="username-validate" onclick="CheckUsername()"> Validate </button>
+            <input type="text" class="form-control w-75" placeholder="Github username" asp-for="Name" value="@Model.Name" id="github-username" />
+            <button type="button" class="btn btn-sm btn-outline-primary" id="username-validate" onclick="CheckUsername()"> 
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="username-validate-loader"></span>
+                <i class="fa" id="validate-icon"></i> &nbsp; Validate
+            </button>
         </div>       
     </div>
     <hr />
@@ -12,21 +15,36 @@
 </form>
 
 <script>
+    $(function() {
+        toastr.options = {
+            positionClass: "toast-top-left",
+        };
+    });
+
     function CheckUsername() {
         var $usernameInput = $('#github-username').val();
+        var $validateIcon = $('#validate-icon');
+        var $usernameLoader = $("#username-validate-loader");
+
+        $usernameLoader.show();
 
         if ($usernameInput) {
             $.get('/Gitar/CheckUsername', { username: $usernameInput }, function(response) {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Username is valid',
-                    timer: 2000
-                });
+                toastr.info('Username is valid')
+                $validateIcon.addClass('fa-solid fa-check-double')
+                $usernameLoader.hide();
             })
             .fail(function(err) {
-                console.log("Error");
-                console.log(err);
+                toastr.error(err.responseText ?? "Unexpected error occurred", "Error");
+                $validateIcon.addClass('fa-solid fa-triangle-exclamation');
+                $usernameLoader.hide();
             });
         }
+        else {
+            toastr.warning("Please provide a username", "Warning");
+            $validateIcon.removeClass();
+        }
+
+        $usernameLoader.hide();
     }
 </script>

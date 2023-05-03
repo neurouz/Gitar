@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\" />
+    <Folder Include="wwwroot\lib\toastr\" />
     <Folder Include="wwwroot\lib\sweetalert\" />
   </ItemGroup>
 

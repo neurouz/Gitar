@@ -6,5 +6,5 @@ namespace Gitar.Domain.Contracts.Infrastructure;
 public interface IGitService
 {
     Task<Response<GitUser>> CheckUsername(string? username);
-    Task<List<GitRepository>> GetRepositories(string? username);
+    Task<Response<List<GitRepository>>> GetRepositories(string? username);
 }

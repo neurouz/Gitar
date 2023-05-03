@@ -148,8 +148,6 @@ public class GitUserJsonRepository : IRepository<GitUser, Guid>
 
             if (user is not null)
             {
-                //user.Name = entity.Name;
-
                 var result = _mapper.Map(entity, user);
 
                 await this.UpdateDataContent(content);

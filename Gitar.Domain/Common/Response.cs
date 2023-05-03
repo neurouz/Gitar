@@ -1,8 +1,6 @@
-﻿using Gitar.Domain.Contracts.Data;
+﻿namespace Gitar.Domain.Common;
 
-namespace Gitar.Domain.Common;
-
-public class Response<T> where T : IEntityBase
+public class Response<T>
 {
     public bool Success { get; set; }
     public string? Message { get; set; }
