@@ -112,13 +112,17 @@ public class GitUserJsonRepository : IRepository<GitUser, Guid>
         return users.SingleOrDefault();
     }
 
-    public async Task<IList<GitUser>> GetAsync(Func<GitUser, bool> predicate)
+    public async Task<IList<GitUser>> GetAsync(Func<GitUser, bool>? predicate = null)
     {
         var content = await this.GetDataContent();
 
         if (content is not null)
         {
-            var entities = content.Where(predicate);
+            var entities = content.AsEnumerable();
+
+            if (predicate is not null) 
+                entities = entities.Where(predicate);
+
             if (entities is not null)
             {
                 return entities.Where(x => x.IsActive).ToList();

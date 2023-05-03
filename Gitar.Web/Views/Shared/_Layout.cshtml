@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Gitar.Web</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free-6.4.0-web/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/sweetalert/sweetalert2.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Gitar.Web.styles.css" asp-append-version="true" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sweetalert/sweetalert2.all.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </head>
 <body>
+    <!-- Modal -->
+    <div class="modal fade" id="modal-holder" tabindex="-1" role="dialog" aria-labelledby="modal-holder" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center w-100" id="modal-title"></h5>
+                </div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -20,7 +40,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"> <i class="bi bi-github"></i> Github Repository Viewer </a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Gitar" asp-action="Index"> <i class="fa-brands fa-github"></i> &nbsp; Github Repository Viewer </a>
                         </li>
                     </ul>
                 </div>
@@ -35,12 +55,9 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - Gitar.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year Ajdin Hukara - <a target="_blank" href="http://neurouz.ddns.net"> Visit portfolio website </a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

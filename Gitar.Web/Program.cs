@@ -1,7 +1,11 @@
 using Gitar.Application.Configuration;
+using Gitar.Domain.Constants;
 using Gitar.Domain.Contracts.Data;
+using Gitar.Domain.Contracts.Infrastructure;
 using Gitar.Domain.Models;
 using Infrastructure.Data.Json.Repositories;
+using Infrastructure.Services.Github;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +17,16 @@ builder.Services.Configure<ApiServiceConfiguration>(builder.Configuration.GetSec
 builder.Services.Configure<DataSourceConfiguration>(builder.Configuration.GetSection(DataSourceConfiguration.CONFIGNAME));
 
 builder.Services.AddSingleton<IRepository<GitUser, Guid>, GitUserJsonRepository>();
+builder.Services.AddScoped<IGitService, GithubService>();
+
+builder.Services.AddHttpClient(ServiceConstants.GITHUB_SERVICE, c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("GithubApi:BaseAddress"));
+    c.DefaultRequestHeaders.Accept.Clear();
+    c.DefaultRequestHeaders.Authorization = 
+        new AuthenticationHeaderValue("Bearer", builder.Configuration.GetValue<string>("GithubApi:AccessToken"));
+    c.DefaultRequestHeaders.UserAgent.TryParseAdd("request");
+});
 
 var app = builder.Build();
 

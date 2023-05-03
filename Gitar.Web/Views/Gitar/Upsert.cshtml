@@ -1,0 +1,32 @@
+﻿@model Gitar.Domain.Models.GitUser
+
+<form method="post">
+    <div class="row">
+        <div class="col d-flex flex-row align-items-center justify-content-between">
+            <input type="text" class="form-control w-75" placeholder="Github username" asp-for="Name" value="@Model.Name" id="github-username">        
+            <button type="button" class="btn btn-sm btn-outline-primary" id="username-validate" onclick="CheckUsername()"> Validate </button>
+        </div>       
+    </div>
+    <hr />
+    <button type="submit" class="btn btn-success w-100"> <i class="fa-solid fa-user-plus"></i> &nbsp; Add user </button>
+</form>
+
+<script>
+    function CheckUsername() {
+        var $usernameInput = $('#github-username').val();
+
+        if ($usernameInput) {
+            $.get('/Gitar/CheckUsername', { username: $usernameInput }, function(response) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Username is valid',
+                    timer: 2000
+                });
+            })
+            .fail(function(err) {
+                console.log("Error");
+                console.log(err);
+            });
+        }
+    }
+</script>
