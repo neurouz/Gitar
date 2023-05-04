@@ -17,3 +17,5 @@ To configure application, Github API key and data configuration is required. You
 
 Simply you can normally start using application with setting only Github API key and leave other settings as they are.
 On first startup, initial user will be created (neurouz). 
+
+### 3. Run application
