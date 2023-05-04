@@ -20,3 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+#repositories-wrapper {
+    max-height: 60vh;
+    overflow-y: scroll;
+}
+
+.list-group-item-action:hover {
+    background: aliceblue !important;
+}

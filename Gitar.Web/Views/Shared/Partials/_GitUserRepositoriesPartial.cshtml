@@ -1,14 +1,34 @@
 ﻿@model Gitar.Web.ViewModels.GitRepositoriesViewModel
 
 <div id="repositories-wrapper">
-    <h3> Repositories for user @Model.Username </h3>
-
-    <ul>
+    <div class="list-group">
         @foreach(var repository in Model.GitRepositories)
         {
-            <li> @repository.RepositoryId </li>
-            <li> @repository.Description </li>
-            <li> <a href="@repository.Url" target="_blank"> @repository.Url </a> </li>
+            <a href="@repository.Url" target="_blank" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 align-items-center">
+                    @if (repository.Fork)
+                    {
+                        <i class="fa-solid fa-code-fork" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Repository is forked"></i>
+                        @: &nbsp; &nbsp;
+                    }
+                    <h5 class="mb-1">@repository.Name</h5>             
+                </div>                
+                <div class="d-flex w-100 justify-content-between">
+                    <p class="mb-1"> @repository.Description </p>
+                    <p class="mb-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Create date"> <i class="fa-regular fa-calendar-plus"></i> &nbsp; @repository.CreateDate.ToString("dd.MM.yyyy") </p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <small class="text-secondary">@repository.Language</small>
+                    <p class="mb-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Last push date"> <i class="fa-solid fa-code-pull-request"></i> &nbsp; @repository.PushDate.ToString("dd.MM.yyyy") </p>
+                </div>
+            </a>
         }
-    </ul>
+    </div>
 </div>
+
+<script>
+    $(function () {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+</script>

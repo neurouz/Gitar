@@ -7,25 +7,44 @@
 <div class="d-flex flex-row flex-wrap align-items-center justify-content-center gap-lg-5">
     @foreach (var user in Model)
     {
-        <div class="card shadow-lg" style="width: 400px">
+        <div class="card shadow-lg" style="width: 350px">
             @{
                 var imageUrl = string.IsNullOrEmpty(user.ImageUrl) ? "/assets/gitcat.png" : user.ImageUrl;
             }
             <img class="card-img-top" src="@imageUrl" alt="Github user">
             <div class="card-body">
-                <h5 class="card-title"> @user.Name </h5>
+                <div class="d-flex gap-2">
+                    <h5 class="card-title"> @user.Name </h5>
+                    <a href="@user.ProfileUrl" target="_blank" title="Open GitHub" data-bs-toggle="tooltip" data-bs-placement="bottom"> <i class="fa-brands fa-github"></i> </a>
+
+                    @if (!string.IsNullOrEmpty(user.Blog))
+                    {
+                        <a href="@user.Blog" target="_blank" title="Open website" data-bs-toggle="tooltip" data-bs-placement="bottom"> <i class="fa-solid fa-globe"></i> </a>
+                    }
+                </div>
+                <div>
+                    <i class="fa-solid fa-users text-primary"></i> @user.Followers followers &bull; @user.Following following
+                </div>
             </div>
             <div class="card-footer">
-                <small class="text-muted"> Last modified @user.ModifyDate.ToString("dd.MM.yyyy") at @user.ModifyDate.ToString("HH:mm")</small> <br />
+                <i class="fa-solid fa-calendar text-secondary"></i> &nbsp; 
                 <small class="text-muted"> Created @user.CreateDate.ToString("dd.MM.yyyy") at @user.CreateDate.ToString("HH:mm")</small>
                 <hr />
                 <div class="d-flex flex-row justify-content-start gap-1" style="margin-bottom: 10px">
                     <button class="btn btn-sm btn-outline-danger user-deactivate-btn" data-id="@user.Id">
                         <i class="fa-solid fa-ban"></i> &nbsp; Deactivate
                     </button>
-                    <button class="btn btn-sm btn-success user-repositories-btn" style="margin-left: auto !important" data-username="@user.Name">
-                        <i class="fa-solid fa-code"></i> &nbsp; Repositories
-                    </button>
+                    @if (user.PublicRepoCount > 0)
+                    {                        
+                        var repositoryCountDisplay = user.PublicRepoCount > 99 ? "99+" : user.PublicRepoCount.ToString();
+                        
+                        <button class="btn btn-sm btn-success user-repositories-btn position-relative" style="margin-left: auto !important" data-username="@user.Name">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Public repository count">
+                                @repositoryCountDisplay
+                            </span>
+                            <i class="fa-solid fa-code"></i> &nbsp; Repositories
+                        </button>                        
+                    }
                 </div>
             </div>
         </div>
@@ -34,6 +53,12 @@
 
 
 <script>
+
+    $(function () {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+
     $('.user-deactivate-btn').click(function () {
         var userId = $(this).attr('data-id');
 
@@ -68,7 +93,7 @@
             var $modalBody = $modalHolder.find('.modal-body');
             var $modalTitle = $modalHolder.find('#modal-title');
 
-            $modalTitle.html("Repositories for user " + username);
+            $modalTitle.html("<i class=\"fa-solid fa-code\"></i> &nbsp; " + username);
             $modalBody.html(response);
             $modalHolder.modal('show');
         });
